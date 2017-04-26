@@ -30,6 +30,12 @@ my $ua = LWP::UserAgent->new(
 	'agent' => 'Mozilla/5.0',
 );
 
+$dt->create_table(
+    {'Odbor' => 'text',
+    'Zkratka' => 'text'},
+'data');
+$dt->create_index(['Odbor'], undef, 'IF NOT EXISTS', 'UNIQUE');
+
 # Get base root.
 print 'Page: '.$base_uri->as_string."\n";
 my $root = get_root($base_uri);
@@ -41,7 +47,7 @@ foreach my $h3 (@h3) {
 	if ($department =~ m/^Odbor/ms) {
 		my $shortcut = dep_shortcut($department);
 		print 'Department: '.encode_utf8($department)."\n";
-		$dt->insert({
+		$dt->upsert({
 			'Odbor' => $department,
 			'Zkratka' => $shortcut,
 		});
